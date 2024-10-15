@@ -1,15 +1,15 @@
 name: Deploy mysite App
 
 
-on:
-  workflow_dispatch:
-    inputs:
+#on:
+#  workflow_dispatch:
+#    inputs:
 
 
-#on:            # //이벤트
-#  push: 
-#    branches: 
-#      - master # 마스터 브런치로 깃허브에 push되었을때
+on:            # //이벤트
+  push: 
+    branches: 
+      - master # 마스터 브런치로 깃허브에 push되었을때
 
 jobs: # 작업을 정의
   build-and-deploy:	# 첫번째작업: 빌드 및 배포
@@ -28,12 +28,12 @@ jobs: # 작업을 정의
         run: mvn clean package		# Maven build 명령어: clean package 실행
 
       - name: Build Docker image	# 단계이름 'Build Docker image(도커이미지빌드)'                  //도커파일이 있어야함(Dockerfile)
-        run: docker build -t jiny0852/mysite:latest . #도 커이미지빌드 명령어 도커허브/레파지토리:태그
+        run: docker build -t jiny0852/api-phonelist:latest . #도 커이미지빌드 명령어 도커허브/레파지토리:태그
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin #비밀번호와 유저명을 코드에 보이지않게 처리(깃허브에 세팅한 값)
       - name: Push Docker image to Docker Hub  # 단계이름 'Log in to Docker Hub(도커허브로그인)' 
-        run: docker push jiny0852/mysite:latest # 도커이미지빌드 명령어 도커허브/레파지토리:태그
+        run: docker push jiny0852/api-phonelist:latest # 도커이미지빌드 명령어 도커허브/레파지토리:태그
 
          
   SSH:  # 두번째작업: SSH
@@ -50,13 +50,13 @@ jobs: # 작업을 정의
           script: |
             sudo mkdir -p /home/ec2-user/upload
 
-            sudo docker stop mysite || true
-            sudo docker rm mysite || true
-            sudo docker rmi jiny0852/mysite:latest
-            sudo docker pull jiny0852/mysite:latest
+            sudo docker stop api-phonelist || true
+            sudo docker rm api-phonelist || true
+            sudo docker rmi jiny0852/api-phonelist:latest
+            sudo docker pull jiny0852/api-phonelist:latest
 
             sudo docker run -d \
-              --name mysite \
+              --name api-phonelist \
               -p 9000:9000 \
               -v /home/ec2-user/upload:/app/upload \
-              jiny0852/mysite:latest
+              jiny0852/api-phonelist:latest
