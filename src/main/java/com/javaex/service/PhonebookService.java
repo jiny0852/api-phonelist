@@ -14,7 +14,7 @@ public class PhonebookService {
 	
 	//필드
 	@Autowired
-	private PhonebookDao phonebookDao;
+	private PhonebookDao phonebookDao;   
 	   
 	
 	
